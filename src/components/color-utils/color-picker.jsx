@@ -108,4 +108,6 @@ ColorPicker.propTypes = {
   sx: PropTypes.object,
 };
 
+ColorPicker.displayName = 'ColorPicker';
+
 export default ColorPicker;

@@ -28,4 +28,6 @@ SvgColor.propTypes = {
   sx: PropTypes.object,
 };
 
+SvgColor.displayName = 'SvgColor';
+
 export default SvgColor;

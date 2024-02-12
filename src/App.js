@@ -1,6 +1,5 @@
 
 import './global.css';
-import React from 'react';
 import { useScrollToTop } from './hooks/use-scroll-to-top';
 
 import Router from './routes/sections';

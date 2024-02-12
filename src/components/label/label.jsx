@@ -58,4 +58,6 @@ Label.propTypes = {
   ]),
 };
 
+Label.displayName = 'Label';
+
 export default Label;

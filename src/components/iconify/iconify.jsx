@@ -23,4 +23,6 @@ Iconify.propTypes = {
   width: PropTypes.number,
 };
 
+Iconify.displayName = 'Iconify';
+
 export default Iconify;
