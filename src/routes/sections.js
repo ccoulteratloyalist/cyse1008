@@ -30,14 +30,10 @@ export default function Router() {
         { path: 'user', element: <UserPage /> },
         { path: 'products', element: <ProductsPage /> },
         { path: 'blog', element: <BlogPage /> },
-        {
-          element: <ProtectedRoute />,
-          children: [
-            { path: 'admin/products/create', element: <CreateProductPage /> },
-            { path: 'admin/products/edit/:id', element: <EditProductPage /> },
-            { path: 'admin/products', element: <ListProductsPage /> },
-          ],
-        },
+        { path: 'admin/products/create', element: <ProtectedRoute><CreateProductPage /></ProtectedRoute> },
+        { path: 'admin/products/edit/:id', element: <ProtectedRoute><EditProductPage /></ProtectedRoute> },
+        { path: 'admin/products', element: <ProtectedRoute><ListProductsPage /></ProtectedRoute> },
+
       ],
     },
     {

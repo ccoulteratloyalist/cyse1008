@@ -16,7 +16,7 @@ const ProtectedRoute = ({ children }) => {
 };
 
 ProtectedRoute.propTypes = {
-  children: PropTypes.node.isRequired, // `node` covers anything that can be rendered: numbers, strings, elements, or an array containing these types.
+  children: PropTypes.node, // `node` covers anything that can be rendered: numbers, strings, elements, or an array containing these types.
 };
 
 ProtectedRoute.displayName = "ProtectRoute";
