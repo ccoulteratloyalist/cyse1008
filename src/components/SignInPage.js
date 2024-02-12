@@ -4,7 +4,7 @@ import {
   signInWithEmailAndPassword,
 } from "../store"
 import { useDispatch } from "react-redux";
-import { TextField, Button, IconButton, InputAdornment } from '@mui/material';
+import { Container, Stack, TextField, Button, IconButton, InputAdornment } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 function SignInPage() {
@@ -31,7 +31,8 @@ function SignInPage() {
   };
 
   return (
-    <>
+    <Container maxWidth="sm">
+      <Stack>
       <form autoComplete="on" onSubmit={handleSubmitRegister}>
         <TextField
           autoFocus
@@ -68,7 +69,7 @@ function SignInPage() {
             ),
           }}
         />
-        <Button type="submit" variant="contained" color="primary" fullWidth>
+        <Button type="submit" variant="contained" color="primary" fullWidth sx={{ bottomMargin: 2 }}>
           Register
         </Button>
       </form>
@@ -78,7 +79,8 @@ function SignInPage() {
           Sign In
         </Button>
       </form>
-    </>
+      </Stack>
+    </Container>
   );
 }
 
