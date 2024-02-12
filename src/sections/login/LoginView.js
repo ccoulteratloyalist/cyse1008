@@ -13,47 +13,80 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import { alpha, useTheme } from '@mui/material/styles';
 import InputAdornment from '@mui/material/InputAdornment';
 
-import { useRouter } from '../../routes/hooks';
+// import { useRouter } from '../../routes/hooks';
 
 import { bgGradient } from '../../theme/css';
 
 import Logo from '../../components/logo';
 import Iconify from '../../components/iconify';
 
+import {
+  signInWithEmailAndPassword,
+} from "../../store"
+import { useDispatch } from "react-redux";
+import { useNavigate } from 'react-router-dom';
 // ----------------------------------------------------------------------
 
 export default function LoginView() {
   const theme = useTheme();
-
-  const router = useRouter();
+  const dispatch = useDispatch();
+  const navigate = useNavigate(); // Initialize useNavigate hook
+  // const router = useRouter();
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleClick = () => {
-    router.push('/dashboard');
+  // const handleClick = () => {
+  //   router.push('/dashboard');
+  // };
+  const [formData, setFormData] = useState({ email: '', password: '' });
+  const handleChange = (event) => {
+    setFormData({ ...formData, [event.target.name]: event.target.value });
   };
+
+  const handleSubmitSignIn = async (event) => {
+    event.preventDefault();
+    try {
+      await dispatch(signInWithEmailAndPassword(formData)).unwrap(); // Ensure signInWithEmailAndPassword is set up to return a promise
+      navigate('/'); // Navigate to home page on successful sign-in
+    } catch (error) {
+      // Handle sign-in error
+      console.error('Sign-in failed:', error);
+    }
+  };
+
 
   const renderForm = (
     <>
-      <Stack spacing={3}>
-        <TextField name="email" label="Email address" />
+      <form autoComplete="on" onSubmit={handleSubmitSignIn}>
+        <Stack spacing={3}>
+          <TextField 
+            autoFocus
+            name="email"
+            label="Email address"
+            type="email"
+            value={formData.email}
+            onChange={handleChange}
+            required />
 
-        <TextField
-          name="password"
-          label="Password"
-          type={showPassword ? 'text' : 'password'}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                  <Iconify icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-        />
-      </Stack>
+          <TextField
+            name="password"
+            label="Password"
+            value={formData.password}
+            onChange={handleChange}
+            type={showPassword ? 'text' : 'password'}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                    <Iconify icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
 
+        </Stack>
+      </form>
       <Stack direction="row" alignItems="center" justifyContent="flex-end" sx={{ my: 3 }}>
         <Link variant="subtitle2" underline="hover">
           Forgot password?
@@ -66,7 +99,7 @@ export default function LoginView() {
         type="submit"
         variant="contained"
         color="inherit"
-        onClick={handleClick}
+        onClick={handleSubmitSignIn}
       >
         Login
       </LoadingButton>
