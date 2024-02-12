@@ -33,7 +33,9 @@ export const signInWithEmailAndPassword = createAsyncThunk(
     try {
       const response = await api.login(payload.email, payload.password)
       const { user, providerId } = response;
+      console.log({ user });
       const { displayName, email, photoURL, uid } = user;
+
       return { user: { displayName, email, photoURL, uid }, providerId };
     } catch (error) {
       console.log({ error })

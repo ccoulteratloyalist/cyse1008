@@ -32,53 +32,53 @@ function SignInPage() {
 
   return (
     <Container maxWidth="sm">
-      <Stack>
-      <form autoComplete="on" onSubmit={handleSubmitRegister}>
-        <TextField
-          autoFocus
-          label="Email"
-          type="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-          fullWidth
-          margin="normal"
-          variant="outlined"
-        />
-        <TextField
-          label="Password"
-          type={showPassword ? "text" : "password"}
-          name="password"
-          value={formData.password}
-          onChange={handleChange}
-          required
-          fullWidth
-          margin="normal"
-          variant="outlined"
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label="toggle password visibility"
-                  onClick={toggleShowPassword}
-                >
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-        />
-        <Button type="submit" variant="contained" color="primary" fullWidth sx={{ bottomMargin: 2 }}>
-          Register
-        </Button>
-      </form>
-      <form autoComplete="on" onSubmit={handleSubmitSignIn}>
-        {/* ... Repeat the same TextField and Button components for sign-in ... */}
-        <Button type="submit" variant="contained" color="secondary" fullWidth>
-          Sign In
-        </Button>
-      </form>
+      <Stack spacing={1}>
+        <form autoComplete="on" onSubmit={handleSubmitRegister}>
+          <TextField
+            autoFocus
+            label="Email"
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+            fullWidth
+            margin="normal"
+            variant="outlined"
+          />
+          <TextField
+            label="Password"
+            type={showPassword ? "text" : "password"}
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            required
+            fullWidth
+            margin="normal"
+            variant="outlined"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={toggleShowPassword}
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
+          <Button type="submit" variant="contained" color="primary" fullWidth sx={{ bottomMargin: 2 }}>
+            Register
+          </Button>
+        </form>
+        <form autoComplete="on" onSubmit={handleSubmitSignIn}>
+          {/* ... Repeat the same TextField and Button components for sign-in ... */}
+          <Button type="submit" variant="contained" color="secondary" fullWidth>
+            Sign In
+          </Button>
+        </form>
       </Stack>
     </Container>
   );
