@@ -1,12 +1,15 @@
 import { lazy, Suspense } from 'react';
 import { Outlet, Navigate, useRoutes } from 'react-router-dom';
-
+import ProtectedRoute from '../components/ProtectedRoute';
 import DashboardLayout from '../layouts/dashboard';
 
 export const IndexPage = lazy(() => import('../pages/App'));
 export const BlogPage = lazy(() => import('../pages/Blog'));
 export const UserPage = lazy(() => import('../pages/User'));
 export const LoginPage = lazy(() => import('../pages/Login'));
+export const CreateProductPage = lazy(() => import('../pages/admin/CreateProduct'));
+export const EditProductPage = lazy(() => import('../pages/admin/EditProduct'));
+export const ListProductsPage = lazy(() => import('../pages/admin/ListProducts'));
 export const ProductsPage = lazy(() => import('../pages/Products'));
 export const Page404 = lazy(() => import('../pages/Page-Not-Found'));
 
@@ -27,6 +30,14 @@ export default function Router() {
         { path: 'user', element: <UserPage /> },
         { path: 'products', element: <ProductsPage /> },
         { path: 'blog', element: <BlogPage /> },
+      ],
+    },
+    {
+      element: <ProtectedRoute />,
+      children: [
+        { path: 'admin/products/create', element: <CreateProductPage /> },
+        { path: 'admin/products/edit/:id', element: <EditProductPage /> },
+        { path: 'admin/products', element: <ListProductsPage /> },
       ],
     },
     {
