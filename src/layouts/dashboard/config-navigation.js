@@ -39,7 +39,7 @@ const navConfig = [
   },
   {
     title: 'New Product',
-    path: '/newproduct',
+    path: '/admin/products/create',
     icon: icon('ic_plus'),
   },
 ];
