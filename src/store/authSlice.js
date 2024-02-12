@@ -77,8 +77,18 @@ export const authSlice = createSlice({
       state.user = action.payload;
     },
   },
+  extraReducers: (builder) => {
+    builder
+    .addCase(signInWithEmailAndPassword.fulfilled, (state, action) => {
+      state.status = "idle";
+      state.user = action.payload.user;
+      state.providerId = action.payload.providerId;
+      state.isLoggedIn = action.payload.user !== undefined;
+    })
+  }
 });
 
 export const { setUser } = authSlice.actions;
+export const selectIsAuthenticated = (state) => state.user;
 export const selectUser = (state) => state.auth.user;
 export default authSlice.reducer;

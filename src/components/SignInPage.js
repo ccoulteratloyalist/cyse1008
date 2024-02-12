@@ -6,20 +6,34 @@ import {
 import { useDispatch } from "react-redux";
 import { Container, Stack, TextField, Button, IconButton, InputAdornment } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 
 function SignInPage() {
   const dispatch = useDispatch();
+  const navigate = useNavigate(); // Initialize useNavigate hook
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleSubmitSignIn = (event) => {
+  const handleSubmitSignIn = async (event) => {
     event.preventDefault();
-    dispatch(signInWithEmailAndPassword(formData));
+    try {
+      await dispatch(signInWithEmailAndPassword(formData)).unwrap(); // Ensure signInWithEmailAndPassword is set up to return a promise
+      navigate('/'); // Navigate to home page on successful sign-in
+    } catch (error) {
+      // Handle sign-in error
+      console.error('Sign-in failed:', error);
+    }
   };
 
-  const handleSubmitRegister = (event) => {
+  const handleSubmitRegister = async (event) => {
     event.preventDefault();
-    dispatch(createUserWithEmailAndPassword(formData));
+    try {
+      await dispatch(createUserWithEmailAndPassword(formData)).unwrap(); // Ensure createUserWithEmailAndPassword is set up to return a promise
+      navigate('/'); // Navigate to home page on successful registration
+    } catch (error) {
+      // Handle registration error
+      console.error('Registration failed:', error);
+    }
   };
 
   const handleChange = (event) => {
