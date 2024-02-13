@@ -10,6 +10,7 @@ import {
     signInWithEmailAndPassword,
     signInWithPopup,    
   } from "firebase/auth";
+import { getFirestore } from 'firebase/firestore';
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -25,6 +26,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
+export const db = getFirestore(app);
 
 export function register(email, password) {
   return createUserWithEmailAndPassword(auth, email, password);
@@ -41,4 +43,5 @@ export function signInWithGoogle() {
     });
     return signInWithPopup(auth, provider);
   }
+
 

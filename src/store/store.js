@@ -12,17 +12,21 @@ import {
 } from 'redux-persist'
 import storage from "redux-persist/lib/storage";
 import authReducer from './authSlice';
+import productsReducer from './productsSlice';
 
 const persistConfig = { key: "root", storage };
 const usersPersistConfig = { key: "users", storage };
+const productsPersistConfig = { key: "products", storage };
 
 const reducers = combineReducers({
   users: persistReducer(usersPersistConfig, authReducer),
+  products: persistReducer(productsPersistConfig, productsReducer),
 });
 
 const rootReducer = (state, action) => {
   if (action.type === "session/logout/fulfilled") {
     storage.removeItem("persist:users");
+    storage.removeItem("persist:products");
     // return reducers(undefined, action);
   }
   return reducers(state, action);

@@ -5,3 +5,8 @@ export {
     signInWithEmailAndPassword,
     signInWithGoogleThunk,
 } from './authSlice';
+
+export {
+    addProduct,
+    fetchProducts,
+} from './productsSlice';

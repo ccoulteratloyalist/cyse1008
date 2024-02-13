@@ -38,7 +38,12 @@ const navConfig = [
     icon: icon('ic_disabled'),
   },
   {
-    title: 'New Product',
+    title: 'List Product',
+    path: '/admin/products/list',
+    icon: icon('ic_plus'),
+  },
+  {
+    title: 'Create Product',
     path: '/admin/products/create',
     icon: icon('ic_plus'),
   },
