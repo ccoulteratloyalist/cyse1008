@@ -12,6 +12,7 @@ import { useAuthContext } from '../hooks';
 
 const loginPaths = {
   jwt: paths.auth.jwt.login,
+  firebase: paths.auth.firebase.login,
 };
 
 // ----------------------------------------------------------------------
@@ -32,6 +33,7 @@ function Container({ children }) {
   const router = useRouter();
 
   const { authenticated, method } = useAuthContext();
+  console.log({ authenticated, method });
 
   const [checked, setChecked] = useState(false);
 

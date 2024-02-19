@@ -15,6 +15,10 @@ export const paths = {
       login: `${ROOTS.AUTH}/jwt/login`,
       register: `${ROOTS.AUTH}/jwt/register`,
     },
+    firebase: {
+      login: `${ROOTS.AUTH}/firebase/login`,
+      register: `${ROOTS.AUTH}/firebase/register`,
+    },
   },
   // DASHBOARD
   dashboard: {
