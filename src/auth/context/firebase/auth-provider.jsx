@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
+import { auth } from './firebase-config';
 import { useMemo, useEffect, useReducer, useCallback } from 'react';
 import { AuthContext } from './auth-context';
 
@@ -50,7 +51,6 @@ const reducer = (state, action) => {
 
 export function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const auth = getAuth();
 
   // Initialize the authentication state
   useEffect(() => {
