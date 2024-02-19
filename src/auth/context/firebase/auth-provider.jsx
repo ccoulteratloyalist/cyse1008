@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
-import { auth } from './firebase-config';
 import { useMemo, useEffect, useReducer, useCallback } from 'react';
+import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+
+import { auth } from './firebase-config';
 import { AuthContext } from './auth-context';
 
 // ----------------------------------------------------------------------
@@ -62,26 +63,20 @@ export function AuthProvider({ children }) {
     });
 
     return () => unsubscribe();
-  }, [auth]);
-
-  // LOGIN
-  const login = useCallback((email, password) => {
-    return signInWithEmailAndPassword(auth, email, password);
-  }, [auth]);
+  }, []);
 
   // REGISTER
-  const register = useCallback((email, password, firstName, lastName) => {
-    return createUserWithEmailAndPassword(auth, email, password);
-  }, [auth]);
+  const register = useCallback((email, password) => createUserWithEmailAndPassword(auth, email, password), []);
+
+  // LOGIN
+  const login = useCallback((email, password) => signInWithEmailAndPassword(auth, email, password), []);
 
   // LOGOUT
-  const logout = useCallback(() => {
-    return auth.signOut().then(() => {
-      dispatch({
-        type: 'LOGOUT',
-      });
+  const logout = useCallback(() => auth.signOut().then(() => {
+    dispatch({
+      type: 'LOGOUT',
     });
-  }, [auth]);
+  }), []);
 
   // ----------------------------------------------------------------------
   
