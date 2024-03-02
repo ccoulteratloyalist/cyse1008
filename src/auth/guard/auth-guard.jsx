@@ -33,7 +33,6 @@ function Container({ children }) {
   const router = useRouter();
 
   const { authenticated, method } = useAuthContext();
-  console.log({ authenticated, method });
 
   const [checked, setChecked] = useState(false);
 
