@@ -1,11 +1,34 @@
 import PropTypes from 'prop-types';
 import { useMemo, useEffect, useReducer, useCallback } from 'react';
-import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, getDoc, setDoc, collection, getFirestore } from 'firebase/firestore';
+import {
+  getAuth,
+  signOut,
+  signInWithPopup,
+  onAuthStateChanged,
+  GoogleAuthProvider,
+  GithubAuthProvider,
+  TwitterAuthProvider,
+  sendEmailVerification,
+  sendPasswordResetEmail,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+} from 'firebase/auth';
 
-import { auth } from './firebase-config';
+import { firebaseApp } from './lib';
 import { AuthContext } from './auth-context';
 
 // ----------------------------------------------------------------------
+/**
+ * NOTE:
+ * We only build demo at basic level.
+ * Customer will need to do some extra handling yourself if you want to extend the logic and other features...
+ */
+// ----------------------------------------------------------------------
+
+const AUTH = getAuth(firebaseApp);
+
+const DB = getFirestore(firebaseApp);
 
 const initialState = {
   user: null,
@@ -19,77 +42,208 @@ const reducer = (state, action) => {
       user: action.payload.user,
     };
   }
-  if (action.type === 'LOGIN') {
-    return {
-      ...state,
-      user: action.payload.user,
-    };
-  }
-  if (action.type === 'REGISTER') {
-    return {
-      ...state,
-      user: action.payload.user,
-    };
-  }
-  if (action.type === 'LOGOUT') {
-    return {
-      ...state,
-      user: null,
-    };
-  }
-  if (action.type === 'ON_AUTH_STATE_CHANGED') {
-    return {
-      ...state,
-      user: action.payload.user,
-      loading: false,
-    };
-  }
   return state;
 };
-
 
 // ----------------------------------------------------------------------
 
 export function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  // Initialize the authentication state
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      dispatch({
-        type: 'ON_AUTH_STATE_CHANGED',
-        payload: { user },
-      });
-    });
+  // const initialize = useCallback(() => {
+  //   try {
+  //     onAuthStateChanged(AUTH, async (user) => {
+  //       if (user) {
+  //         if (user.emailVerified) {
+  //           const userProfile = doc(DB, 'users', user.uid);
 
-    return () => unsubscribe();
+  //           const docSnap = await getDoc(userProfile);
+
+  //           const profile = docSnap.data();
+
+  //           dispatch({
+  //             type: 'INITIAL',
+  //             payload: {
+  //               user: {
+  //                 ...user,
+  //                 ...profile,
+  //                 id: user.uid,
+  //                 role: 'admin',
+  //               },
+  //             },
+  //           });
+  //         } else {
+  //           dispatch({
+  //             type: 'INITIAL',
+  //             payload: {
+  //               user: null,
+  //             },
+  //           });
+  //         }
+  //       } else {
+  //         dispatch({
+  //           type: 'INITIAL',
+  //           payload: {
+  //             user: null,
+  //           },
+  //         });
+  //       }
+  //     });
+  //   } catch (error) {
+  //     console.error(error);
+  //     dispatch({
+  //       type: 'INITIAL',
+  //       payload: {
+  //         user: null,
+  //       },
+  //     });
+  //   }
+  // }, []);
+
+  /*
+   * (1) If skip emailVerified
+   * Remove the condition (if/else) : user.emailVerified
+   */
+
+  const initialize = useCallback(() => {
+    try {
+      onAuthStateChanged(AUTH, async (user) => {
+        if (user) {
+          console.log({ user })
+          const userProfile = doc(DB, 'users', user.uid);
+
+          const docSnap = await getDoc(userProfile);
+
+          const profile = docSnap.data();
+
+          dispatch({
+            type: 'INITIAL',
+            payload: {
+              user: {
+                ...user,
+                ...profile,
+                id: user.uid,
+                role: 'admin',
+              },
+            },
+          });
+        } else {
+          dispatch({
+            type: 'INITIAL',
+            payload: {
+              user: null,
+            },
+          });
+        }
+      });
+    } catch (error) {
+      console.error(error);
+      dispatch({
+        type: 'INITIAL',
+        payload: {
+          user: null,
+        },
+      });
+    }
+  }, []);
+
+
+  useEffect(() => {
+    initialize();
+  }, [initialize]);
+
+  // LOGIN
+  const login = useCallback(async (email, password) => {
+    await signInWithEmailAndPassword(AUTH, email, password);
+  }, []);
+
+  const loginWithGoogle = useCallback(async () => {
+    const provider = new GoogleAuthProvider();
+
+    await signInWithPopup(AUTH, provider);
+  }, []);
+
+  const loginWithGithub = useCallback(async () => {
+    const provider = new GithubAuthProvider();
+
+    await signInWithPopup(AUTH, provider);
+  }, []);
+
+  const loginWithTwitter = useCallback(async () => {
+    const provider = new TwitterAuthProvider();
+
+    await signInWithPopup(AUTH, provider);
   }, []);
 
   // REGISTER
-  const register = useCallback((email, password) => createUserWithEmailAndPassword(auth, email, password), []);
+  const register = useCallback(async (email, password, firstName, lastName) => {
+    const newUser = await createUserWithEmailAndPassword(AUTH, email, password);
 
-  // LOGIN
-  const login = useCallback((email, password) => signInWithEmailAndPassword(auth, email, password), []);
+    /*
+     * (1) If skip emailVerified
+     * Remove : await sendEmailVerification(newUser.user);
+     */
+    await sendEmailVerification(newUser.user);
+
+    const userProfile = doc(collection(DB, 'users'), newUser.user?.uid);
+
+    await setDoc(userProfile, {
+      uid: newUser.user?.uid,
+      email,
+      displayName: `${firstName} ${lastName}`,
+    });
+  }, []);
 
   // LOGOUT
-  const logout = useCallback(() => auth.signOut().then(() => {
-    dispatch({
-      type: 'LOGOUT',
-    });
-  }), []);
+  const logout = useCallback(async () => {
+    await signOut(AUTH);
+  }, []);
+
+  // FORGOT PASSWORD
+  const forgotPassword = useCallback(async (email) => {
+    await sendPasswordResetEmail(AUTH, email);
+  }, []);
 
   // ----------------------------------------------------------------------
-  
-  // Value memoization to avoid unnecessary re-renders
-  const memoizedValue = useMemo(() => ({
-    user: state.user,
-    method: 'firebase',
-    loading: state.loading,
-    authenticated: !!state.user,
-    login,
-    register,
-    logout,
-  }), [state, login, register, logout]);
+
+  /*
+   * (1) If skip emailVerified
+   * const checkAuthenticated = state.user?.emailVerified ? 'authenticated' : 'unauthenticated';
+   */
+  const checkAuthenticated = state.user?.emailVerified ? 'authenticated' : 'unauthenticated';
+
+  // const status = state.loading ? 'loading' : checkAuthenticated;
+  const status = state.loading ? 'loading' : true;  // skip checkAuthenticated; TODO add emailVerfified
+
+  const memoizedValue = useMemo(
+    () => ({
+      user: state.user,
+      method: 'firebase',
+      loading: status === 'loading',
+      authenticated: status === 'authenticated',
+      unauthenticated: status === 'unauthenticated',
+      //
+      login,
+      logout,
+      register,
+      forgotPassword,
+      loginWithGoogle,
+      loginWithGithub,
+      loginWithTwitter,
+    }),
+    [
+      status,
+      state.user,
+      //
+      login,
+      logout,
+      register,
+      forgotPassword,
+      loginWithGithub,
+      loginWithGoogle,
+      loginWithTwitter,
+    ]
+  );
 
   return <AuthContext.Provider value={memoizedValue}>{children}</AuthContext.Provider>;
 }
