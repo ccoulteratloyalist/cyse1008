@@ -13,6 +13,36 @@ const JwtLoginPage = lazy(() => import('src/pages/auth/jwt/login'));
 const JwtRegisterPage = lazy(() => import('src/pages/auth/jwt/register'));
 
 // ----------------------------------------------------------------------
+const authFirebase = {
+  path: 'firebase',
+  element: (
+    <Suspense fallback={<SplashScreen />}>
+      <Outlet />
+    </Suspense>
+  ),
+  children: [
+    {
+      path: 'login',
+      element: (
+        <GuestGuard>
+          <AuthClassicLayout>
+            <JwtLoginPage />
+          </AuthClassicLayout>
+        </GuestGuard>
+      ),
+    },
+    {
+      path: 'register',
+      element: (
+        <GuestGuard>
+          <AuthClassicLayout title="Manage the job more effectively with Minimal">
+            <JwtRegisterPage />
+          </AuthClassicLayout>
+        </GuestGuard>
+      ),
+    },
+  ],
+};
 
 const authJwt = {
   path: 'jwt',
@@ -48,6 +78,6 @@ const authJwt = {
 export const authRoutes = [
   {
     path: 'auth',
-    children: [authJwt],
+    children: [authFirebase, authJwt],
   },
 ];
