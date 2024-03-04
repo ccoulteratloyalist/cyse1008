@@ -26,21 +26,12 @@
       "version": "detect"
     },
     "import/resolver": {
-      "alias": {
-        "map": [
-          [
-            "src",
-            "./src"
-          ]
-        ],
-        "extensions": [
-          ".js",
-          ".jsx",
-          ".json",
-          ".ts",
-          ".tsx"
-        ]
-      }
+      "node": {
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      },
+      "alias": [
+        ["src", "./src"]
+      ]
     }
   },
   "rules": {
@@ -96,9 +87,7 @@
         "ignoreCase": false
       }
     ],
-    // unused-imports
-    // https://www.npmjs.com/package/eslint-plugin-unused-imports
-    "unused-imports/no-unused-imports": 1,
+    "unused-imports/no-unused-imports": 0,
     "unused-imports/no-unused-vars": [
       0,
       {
