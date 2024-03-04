@@ -108,6 +108,7 @@ export function AuthProvider({ children }) {
   const initialize = useCallback(() => {
     try {
       onAuthStateChanged(AUTH, async (user) => {
+        console.log({ user })
         if (user) {
           console.log({ user })
           const userProfile = doc(DB, 'users', user.uid);
@@ -212,8 +213,8 @@ export function AuthProvider({ children }) {
    */
   const checkAuthenticated = state.user?.emailVerified ? 'authenticated' : 'unauthenticated';
 
-  // const status = state.loading ? 'loading' : checkAuthenticated;
-  const status = state.loading ? 'loading' : true;  // skip checkAuthenticated; TODO add emailVerfified
+  const status = state.loading ? 'loading' : checkAuthenticated;
+  // const status = state.loading ? 'loading' : true;  // skip checkAuthenticated; TODO add emailVerfified
 
   const memoizedValue = useMemo(
     () => ({
