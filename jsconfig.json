@@ -1,8 +1,18 @@
 {
   "compilerOptions": {
-    "baseUrl": "src",
+    "baseUrl": ".",
     "paths": {
-      "src/*": ["*"]
+      "api/*": ["src/api/*"],
+      "auth/*": ["src/auth/*"],
+      "components/*": ["src/components/*"],      
+      "hooks/*": ["src/hooks/*"],
+      "layouts/*": ["src/layouts/*"],
+      "locales/*": ["src/locales/*"],
+      "pages/*": ["src/pages/*"],
+      "routes/*": ["src/routes/*"],
+      "sections/*": ["src/sections/*"],
+      "theme/*": ["src/theme/*"],
+      "utils/*": ["src/utils/*"]
     }
   },
   "include": ["src"]
