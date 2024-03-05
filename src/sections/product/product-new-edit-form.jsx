@@ -3,7 +3,9 @@ import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMemo, useState, useEffect, useCallback } from 'react';
-
+import { useAuthContext } from 'src/auth/hooks';
+import { addDoc, collection } from 'firebase/firestore';
+import { DB } from 'src/auth/context/firebase/lib';
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
@@ -33,7 +35,7 @@ import {
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, {
   RHFSelect,
-  RHFEditor,
+  // RHFEditor,
   RHFUpload,
   RHFSwitch,
   RHFTextField,
@@ -46,7 +48,7 @@ import FormProvider, {
 
 export default function ProductNewEditForm({ currentProduct }) {
   const router = useRouter();
-
+  const { user } = useAuthContext();
   const mdUp = useResponsive('up', 'md');
 
   const { enqueueSnackbar } = useSnackbar();
@@ -55,11 +57,11 @@ export default function ProductNewEditForm({ currentProduct }) {
 
   const NewProductSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
-    images: Yup.array().min(1, 'Images is required'),
+   // images: Yup.array().min(1, 'Images is required'),
     tags: Yup.array().min(2, 'Must have at least 2 tags'),
     category: Yup.string().required('Category is required'),
     price: Yup.number().moreThan(0, 'Price should not be $0.00'),
-    description: Yup.string().required('Description is required'),
+  //   description: Yup.string().required('Description is required'),
     // not required
     taxes: Yup.number(),
     newLabel: Yup.object().shape({
@@ -126,9 +128,24 @@ export default function ProductNewEditForm({ currentProduct }) {
   }, [currentProduct?.taxes, includeTaxes, setValue]);
 
   const onSubmit = handleSubmit(async (data) => {
+    console.log({ user, data })
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      if (!user) {
+        throw new Error('You must be logged in to create a product.');
+      }
+      // await new Promise((resolve) => setTimeout(resolve, 500));
+            // Now you have access to the logged-in user's info
+      const productData = {
+        ...data,
+        createdBy: user.id, // Assuming the user object has an id field
+        createdAt: new Date(), // Timestamp for when the product is created
+      };
+      console.log({ productData })
+      const docRef = await addDoc(collection(DB, 'products'), productData);
+
+      console.info('Product created with ID: ', docRef.id);
       reset();
+
       enqueueSnackbar(currentProduct ? 'Update success!' : 'Create success!');
       router.push(paths.dashboard.product.root);
       console.info('DATA', data);
@@ -190,10 +207,10 @@ export default function ProductNewEditForm({ currentProduct }) {
 
             <RHFTextField name="subDescription" label="Sub Description" multiline rows={4} />
 
-            <Stack spacing={1.5}>
+            {/* <Stack spacing={1.5}>
               <Typography variant="subtitle2">Content</Typography>
               <RHFEditor simple name="description" />
-            </Stack>
+            </Stack> */}
 
             <Stack spacing={1.5}>
               <Typography variant="subtitle2">Images</Typography>
