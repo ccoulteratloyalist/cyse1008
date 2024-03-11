@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMemo, useState, useEffect, useCallback } from 'react';
 import { useAuthContext } from 'src/auth/hooks';
-import { addDoc, collection, updateDoc, doc } from 'firebase/firestore';
+import { doc, addDoc, updateDoc, collection } from 'firebase/firestore';
 import { DB } from 'src/auth/context/firebase/lib';
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
