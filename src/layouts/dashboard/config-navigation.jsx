@@ -66,7 +66,7 @@ export function useNavData() {
           {
             title: t('shop'),
             path: paths.product.root,
-            icon: ICONS.product,
+            icon: ICONS.order,
           },
           {
             title: t('ecommerce'),
