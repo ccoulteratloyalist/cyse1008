@@ -8,7 +8,7 @@ import ListItemText from '@mui/material/ListItemText';
 import LinearProgress from '@mui/material/LinearProgress';
 
 import { fCurrency } from 'src/utils/format-number';
-import { fTime, fDate } from 'src/utils/format-time';
+import { fTimeISO, fDateISO } from 'src/utils/format-time';
 
 import Label from 'src/components/label';
 
@@ -41,8 +41,8 @@ RenderCellPublish.propTypes = {
 export function RenderCellCreatedAt({ params }) {
   return (
     <ListItemText
-      primary={fDate(params.row.createdAt)}
-      secondary={fTime(params.row.createdAt)}
+      primary={fDateISO(params.row.createdAt)}
+      secondary={fTimeISO(params.row.createdAt)}
       primaryTypographyProps={{ typography: 'body2', noWrap: true }}
       secondaryTypographyProps={{
         mt: 0.5,
