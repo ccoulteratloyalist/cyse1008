@@ -6,6 +6,7 @@ import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
 import ListItemText from '@mui/material/ListItemText';
 import LinearProgress from '@mui/material/LinearProgress';
+import { useNavigate } from 'react-router-dom';
 
 import { fCurrency } from 'src/utils/format-number';
 import { fTimeISO, fDateISO } from 'src/utils/format-time';
@@ -84,6 +85,13 @@ RenderCellStock.propTypes = {
 };
 
 export function RenderCellProduct({ params }) {
+  const navigate = useNavigate(); // Initialize the navigate function
+
+  // Handler to navigate to the edit page
+  const handleNavigate = () => {
+    navigate(`/dashboard/product/${params.row.id}/edit`);
+  };
+
   return (
     <Stack direction="row" alignItems="center" sx={{ py: 2, width: 1 }}>
       <Avatar
@@ -100,7 +108,7 @@ export function RenderCellProduct({ params }) {
             noWrap
             color="inherit"
             variant="subtitle2"
-            onClick={params.row.onViewRow}
+            onClick={handleNavigate}
             sx={{ cursor: 'pointer' }}
           >
             {params.row.name}
