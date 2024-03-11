@@ -1,9 +1,9 @@
 import useSWR from 'swr';
-import { useMemo, useState, useEffect } from 'react';
-import { doc, query, getDoc, getDocs, collection } from "firebase/firestore";
+import { useMemo, useState, useEffect, useCallback, } from 'react';
+import { doc, query, getDoc, getDocs, deleteDoc, collection } from "firebase/firestore";
 import { fetcher, endpoints } from 'src/utils/axios';
 import { DB } from 'src/auth/context/firebase/lib';
-
+import { useSnackbar } from 'src/components/snackbar';
 // ----------------------------------------------------------------------
 
 // export function useGetProducts() {
@@ -60,6 +60,23 @@ export function useGetProducts() {
 
   return memoizedValue;
 }
+
+export const useDeleteProduct = () => {
+  const { enqueueSnackbar } = useSnackbar();
+
+  const deleteProduct = useCallback(async (productId) => {
+    try {
+      await deleteDoc(doc(DB, 'products', productId));
+      enqueueSnackbar('Product successfully deleted', { variant: 'success' });
+    } catch (error) {
+      console.error('Error deleting product: ', error);
+      enqueueSnackbar('Failed to delete product', { variant: 'error' });
+    }
+  }, [enqueueSnackbar]);
+
+  return deleteProduct;
+};
+
 
 // ----------------------------------------------------------------------
 

@@ -21,7 +21,7 @@ import { RouterLink } from 'src/routes/components';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import { useGetProducts } from 'src/api/product';
+import { useGetProducts, useDeleteProduct} from 'src/api/product';
 import { PRODUCT_STOCK_OPTIONS } from 'src/_mock';
 
 import Iconify from 'src/components/iconify';
@@ -63,7 +63,7 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 
 export default function ProductListView() {
   const { enqueueSnackbar } = useSnackbar();
-
+  const deleteProduct = useDeleteProduct(); // Use the delete hook
   const confirmRows = useBoolean();
 
   const router = useRouter();
@@ -105,23 +105,24 @@ export default function ProductListView() {
   }, []);
 
   const handleDeleteRow = useCallback(
-    (id) => {
-      const deleteRow = tableData.filter((row) => row.id !== id);
-
-      enqueueSnackbar('Delete success!');
-
-      setTableData(deleteRow);
+    async (id) => {
+      await deleteProduct(id);
+      // Refresh your products list or remove the item from local state
+      const updatedTableData = tableData.filter((row) => row.id !== id);
+      setTableData(updatedTableData);
     },
-    [enqueueSnackbar, tableData]
+    [deleteProduct, tableData]
   );
 
-  const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !selectedRowIds.includes(row.id));
+  const handleDeleteRows = useCallback(async () => {
+    await Promise.all(selectedRowIds.map((id) => deleteProduct(id)));
+    enqueueSnackbar('Selected products deleted successfully', { variant: 'success' });
+    // Refresh your products list or remove the items from local state
+    const updatedTableData = tableData.filter((row) => !selectedRowIds.includes(row.id));
+    setTableData(updatedTableData);
+    setSelectedRowIds([]);
+  }, [deleteProduct, selectedRowIds, tableData, enqueueSnackbar]);
 
-    enqueueSnackbar('Delete success!');
-
-    setTableData(deleteRows);
-  }, [enqueueSnackbar, selectedRowIds, tableData]);
 
   const handleEditRow = useCallback(
     (id) => {
