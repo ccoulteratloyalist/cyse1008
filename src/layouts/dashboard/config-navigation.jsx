@@ -21,6 +21,7 @@ const icon = (name) => (
 const ICONS = {
   job: icon('ic_job'),
   blog: icon('ic_blog'),
+  cart: icon('ic_cart'),
   chat: icon('ic_chat'),
   mail: icon('ic_mail'),
   user: icon('ic_user'),
@@ -63,9 +64,9 @@ export function useNavData() {
             icon: ICONS.dashboard,
           },
           {
-            title: t('products'),
+            title: t('shop'),
             path: paths.product.root,
-            icon: ICONS.product,
+            icon: ICONS.cart,
           },
           {
             title: t('ecommerce'),
