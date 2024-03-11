@@ -10,7 +10,7 @@ export const navConfig = [
   {
     title: 'Home',
     icon: <Iconify icon="solar:home-2-bold-duotone" />,
-    path: '/',
+    path: '/dashboard',
   },
   {
     title: 'Components',
