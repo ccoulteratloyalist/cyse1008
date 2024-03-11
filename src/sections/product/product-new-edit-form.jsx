@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMemo, useState, useEffect, useCallback } from 'react';
 import { useAuthContext } from 'src/auth/hooks';
-import { addDoc, collection } from 'firebase/firestore';
+import { addDoc, collection, updateDoc, doc } from 'firebase/firestore';
 import { DB } from 'src/auth/context/firebase/lib';
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
@@ -128,32 +128,44 @@ export default function ProductNewEditForm({ currentProduct }) {
   }, [currentProduct?.taxes, includeTaxes, setValue]);
 
   const onSubmit = handleSubmit(async (data) => {
-    console.log({ user, data })
+    console.log({ user, data });
     try {
       if (!user) {
-        throw new Error('You must be logged in to create a product.');
+        throw new Error('You must be logged in to modify a product.');
       }
-      // await new Promise((resolve) => setTimeout(resolve, 500));
-            // Now you have access to the logged-in user's info
       const productData = {
         ...data,
-        createdBy: user.id, // Assuming the user object has an id field
-        createdAt: new Date(), // Timestamp for when the product is created
+        updatedBy: user.id, // Assuming the user object has an id field
+        updatedAt: new Date(), // Timestamp for when the product is updated or created
       };
-      console.log({ productData })
-      const docRef = await addDoc(collection(DB, 'products'), productData);
-
-      console.info('Product created with ID: ', docRef.id);
+      console.log({ productData });
+  
+      // Check if we're updating an existing product or creating a new one
+      if (currentProduct) {
+        // Update existing product
+        const productRef = doc(DB, 'products', currentProduct.id);
+        await updateDoc(productRef, productData);
+        enqueueSnackbar('Update success!');
+      } else {
+        // Create new product
+        const docRef = await addDoc(collection(DB, 'products'), {
+          ...productData,
+          createdBy: user.id,
+          createdAt: new Date(),
+        });
+        console.info('Product created with ID: ', docRef.id);
+        enqueueSnackbar('Create success!');
+      }
+  
       reset();
-
-      enqueueSnackbar(currentProduct ? 'Update success!' : 'Create success!');
       router.push(paths.dashboard.product.root);
       console.info('DATA', data);
     } catch (error) {
       console.error(error);
+      enqueueSnackbar('Error updating product!', { variant: 'error' });
     }
   });
-
+  
   const handleDrop = useCallback(
     (acceptedFiles) => {
       const files = values.images || [];
