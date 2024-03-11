@@ -153,7 +153,7 @@ export default function ProductShopDetailsView({ id }) {
             },
             {
               value: 'reviews',
-              label: `Reviews (${product.reviews.length})`,
+              label: `Reviews (${product.reviews?.length ?? 0})`,
             },
           ].map((tab) => (
             <Tab key={tab.value} value={tab.value} label={tab.label} />
@@ -164,7 +164,7 @@ export default function ProductShopDetailsView({ id }) {
           <ProductDetailsDescription description={product?.description} />
         )}
 
-        {currentTab === 'reviews' && (
+        {currentTab === 'reviews' && product.ratings && product.reviews && (
           <ProductDetailsReview
             ratings={product.ratings}
             reviews={product.reviews}
