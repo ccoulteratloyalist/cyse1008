@@ -1,6 +1,6 @@
 import useSWR from 'swr';
 import { useMemo, useState, useEffect } from 'react';
-import { query, getDocs, collection } from "firebase/firestore";
+import { doc, query, getDoc, getDocs, collection } from "firebase/firestore";
 import { fetcher, endpoints } from 'src/utils/axios';
 import { DB } from 'src/auth/context/firebase/lib';
 
@@ -36,7 +36,7 @@ export function useGetProducts() {
       try {
         const q = query(collection(DB, "products")); // Assuming you have a collection named 'products'
         const querySnapshot = await getDocs(q);
-        const products = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const products = querySnapshot.docs.map(docSnapshot => ({ id: docSnapshot.id, ...docSnapshot.data() }));
         setData({ products });
         setIsLoading(false);
       } catch (err) {
@@ -63,20 +63,68 @@ export function useGetProducts() {
 
 // ----------------------------------------------------------------------
 
+// export function useGetProduct(productId) {
+//   const URL = productId ? [endpoints.product.details, { params: { productId } }] : '';
+
+//   const { data, isLoading, error, isValidating } = useSWR(URL, fetcher);
+
+//   const memoizedValue = useMemo(
+//     () => ({
+//       product: data?.product,
+//       productLoading: isLoading,
+//       productError: error,
+//       productValidating: isValidating,
+//     }),
+//     [data?.product, error, isLoading, isValidating]
+//   );
+
+//   return memoizedValue;
+// }
 export function useGetProduct(productId) {
-  const URL = productId ? [endpoints.product.details, { params: { productId } }] : '';
+  const [product, setProduct] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const { data, isLoading, error, isValidating } = useSWR(URL, fetcher);
+  useEffect(() => {
+    if (!productId) {
+      // If no productId is provided, immediately return without fetching
+      setProduct(null);
+      setIsLoading(false);
+      setError(null);
+      return;
+    }
 
-  const memoizedValue = useMemo(
-    () => ({
-      product: data?.product,
-      productLoading: isLoading,
-      productError: error,
-      productValidating: isValidating,
-    }),
-    [data?.product, error, isLoading, isValidating]
-  );
+    const fetchProduct = async () => {
+      setIsLoading(true);
+      try {
+        const productRef = doc(DB, "products", productId); // Assuming 'products' is your collection
+        const docSnap = await getDoc(productRef);
+
+        if (docSnap.exists()) {
+          setProduct({ id: docSnap.id, ...docSnap.data() });
+        } else {
+          // Handle the case where the document does not exist
+          console.log("No such document!");
+          setError("No such document!");
+        }
+      } catch (err) {
+        console.error("Error fetching product:", err);
+        setError(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [productId]); // Depend on productId to re-fetch when it changes
+
+  // Memoize the returned object to avoid unnecessary re-renders
+  const memoizedValue = useMemo(() => ({
+    product,
+    productLoading: isLoading,
+    productError: error,
+    productValidating: isLoading, // Using isLoading for consistency with the original function's interface
+  }), [product, error, isLoading]);
 
   return memoizedValue;
 }
