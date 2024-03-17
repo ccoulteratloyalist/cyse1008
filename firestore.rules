@@ -1,7 +1,24 @@
 rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
+    
+    // Users collection
+    match /users/{userId} {
+      allow read: if true; // Allows anyone to read the products
+      allow write: if request.auth != null && request.auth.uid == userId;
+      // The above line ensures that a user can only write to their own user document.
+    }
+
+    // Products collection
+    match /products/{productId} {
+      allow read: if true; // Allow anyone to read, adjust as necessary
+      allow create: if request.auth != null; // Allow any authenticated user to create a product
+      allow update, delete: if request.auth != null && request.auth.uid == resource.data.createdBy;
+      // The above line ensures that only the creator of the product can update or delete it.
+    }
+
+    // Default rule for other documents to prevent unauthorized access
+    // You might want to restrict this further
     match /{document=**} {
       allow read, write: if false;
     }
